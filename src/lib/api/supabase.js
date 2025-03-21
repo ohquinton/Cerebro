@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 
-// Load environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
+// Load environment variables with fallbacks for Vercel builds
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder-supabase-project.supabase.co';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key_for_build_time_only';
 
 // Validation and fallback values
 if (!supabaseUrl) {
@@ -68,16 +68,16 @@ const supabaseOptions = {
 
 // Initialize the Supabase client with enhanced configuration
 export const supabase = createClient(
-  supabaseUrl || '',
-  supabaseKey || '',
+  supabaseUrl,
+  supabaseKey,
   supabaseOptions
 );
 
 // Function to create a Supabase server client (for server components)
 export const createServerSupabaseClient = ({ cookies }) => {
   return createServerClient(
-    supabaseUrl || '',
-    supabaseKey || '',
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         get: (name) => cookies.get(name)?.value,

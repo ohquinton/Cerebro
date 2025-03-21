@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// Initialize Stripe with your secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Initialize Stripe with your secret key and fallback for builds
+const stripeKey = process.env.STRIPE_SECRET_KEY || 'placeholder_stripe_key_for_build_time_only';
+const stripe = new Stripe(stripeKey);
+
+// Log for build debugging
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.log("Using placeholder Stripe key for build process");
+}
 
 export async function POST(request: Request) {
   try {
