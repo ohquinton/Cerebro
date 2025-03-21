@@ -1,12 +1,19 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/api/supabase';
-import RegisterForm from '@/components/auth/RegisterForm';
+import dynamic from 'next/dynamic';
 
-export default function RegisterPage() {
+// Import the component with no SSR to prevent hydration errors
+const RegisterForm = dynamic(
+  () => import('@/components/auth/RegisterForm'),
+  { ssr: false }
+);
+
+// Separate component to handle search params to allow for Suspense wrapping
+function RegisterPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnTo = searchParams.get('returnTo') || '/dashboard';
@@ -51,7 +58,7 @@ export default function RegisterPage() {
       router.push('/');
     }
   };
-  
+
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex flex-col items-center justify-center text-white">
@@ -98,7 +105,11 @@ export default function RegisterPage() {
         </div>
         
         <div className="bg-gray-900/80 backdrop-blur-xl p-6 rounded-xl border border-gray-700 shadow-xl transition-all duration-300">
-          <RegisterForm />
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 to-gray-900">
+            <div className="text-white text-xl">Loading registration form...</div>
+          </div>}>
+            <RegisterForm />
+          </Suspense>
         </div>
         
         <div className="mt-8 text-center">
@@ -116,5 +127,16 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main component wrapped with Suspense
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 to-gray-900">
+      <div className="text-white text-xl">Loading registration page...</div>
+    </div>}>
+      <RegisterPageContent />
+    </Suspense>
   );
 }

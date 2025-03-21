@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
-    swcMinify: true,
+    // swcMinify: true, // This option is now default in Next.js 13+ and no longer needed
+  
     // Enable statically exporting pages as needed
     // output: 'export', // Uncomment this if you want to statically export pages
   

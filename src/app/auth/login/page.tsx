@@ -1,12 +1,13 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import LoginForm from '@/components/auth/LoginForm';
 import { ChevronLeft } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/api/supabase';
 
-export default function LoginPage() {
+// Separate component that uses useSearchParams to allow for Suspense wrapping
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnTo = searchParams.get('returnTo') || '/';
@@ -144,6 +145,19 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Main component with hydration suppression directly applied
+export default function LoginPage() {
+  return (
+    <div suppressHydrationWarning={true}>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 to-gray-900">
+        <div className="text-white text-xl">Loading login page...</div>
+      </div>}>
+        <LoginPageContent />
+      </Suspense>
     </div>
   );
 }

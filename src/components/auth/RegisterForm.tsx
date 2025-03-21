@@ -20,6 +20,7 @@ interface FormData {
 
 interface RegisterFormProps {
   onSuccess?: () => void;
+  redirectPath?: string;
 }
 
 interface ValidationState {
@@ -611,7 +612,8 @@ const PasswordInput: React.FC<{
 
 // Updated full register form with improved calendar
 const RegisterForm: React.FC<RegisterFormProps> = ({
-  onSuccess
+  onSuccess,
+  redirectPath
 }) => {
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
@@ -1003,6 +1005,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         // Execute success callback if provided
         if (onSuccess) {
           onSuccess();
+        }
+        if (redirectPath) {
+          window.location.href = redirectPath;
         }
       }, 2000);
       

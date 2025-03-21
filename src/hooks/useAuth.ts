@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 interface User {
   id: string;
   email: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface AuthState {
@@ -28,7 +28,6 @@ export const useAuth = (redirectToLogin: boolean = false) => {
   useEffect(() => {
     const checkAuthState = async () => {
       try {
-        // Start by checking local storage for quick UI response
         const quickAuthCheck = localStorage.getItem('cerebro-logged-in') === 'true';
         
         if (!quickAuthCheck) {
@@ -47,7 +46,6 @@ export const useAuth = (redirectToLogin: boolean = false) => {
           return;
         }
         
-        // Then verify with Supabase
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -61,7 +59,6 @@ export const useAuth = (redirectToLogin: boolean = false) => {
             throw userError;
           }
           
-          // Try to get profile data to enrich user object
           let profileData = null;
           try {
             const { data: profile, error: profileError } = await supabase
@@ -89,7 +86,6 @@ export const useAuth = (redirectToLogin: boolean = false) => {
             error: null
           });
         } else {
-          // Session not found despite local storage flag
           localStorage.removeItem('cerebro-logged-in');
           
           setAuthState({
@@ -104,14 +100,19 @@ export const useAuth = (redirectToLogin: boolean = false) => {
             router.push(`/auth/login?returnTo=${encodeURIComponent(currentPath)}`);
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Auth error in useAuth hook:', error);
+        
+        let errorMessage = 'Authentication error';
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        }
         
         setAuthState({
           isAuthenticated: false,
           user: null,
           isLoading: false,
-          error: error.message || 'Authentication error'
+          error: errorMessage
         });
         
         if (redirectToLogin) {
@@ -123,12 +124,10 @@ export const useAuth = (redirectToLogin: boolean = false) => {
     
     checkAuthState();
     
-    // Set up auth state change listener
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('Auth state changed:', event);
       
       if (event === 'SIGNED_IN' && session) {
-        // Update auth state when signed in
         localStorage.setItem('cerebro-logged-in', 'true');
         
         setAuthState(prevState => ({
@@ -142,7 +141,6 @@ export const useAuth = (redirectToLogin: boolean = false) => {
           isLoading: false
         }));
       } else if (event === 'SIGNED_OUT') {
-        // Clear auth state when signed out
         localStorage.removeItem('cerebro-logged-in');
         
         setAuthState({
@@ -159,7 +157,6 @@ export const useAuth = (redirectToLogin: boolean = false) => {
       }
     });
     
-    // Clean up the listener when the component unmounts
     return () => {
       if (authListener && authListener.subscription) {
         authListener.subscription.unsubscribe();
@@ -167,7 +164,6 @@ export const useAuth = (redirectToLogin: boolean = false) => {
     };
   }, [router, redirectToLogin]);
 
-  // Sign out function
   const signOut = async () => {
     try {
       setAuthState(prevState => ({ ...prevState, isLoading: true }));
@@ -178,7 +174,6 @@ export const useAuth = (redirectToLogin: boolean = false) => {
         throw error;
       }
       
-      // Clear local storage items
       localStorage.removeItem('cerebro-logged-in');
       localStorage.removeItem('dashboardLoaded');
       
@@ -191,16 +186,21 @@ export const useAuth = (redirectToLogin: boolean = false) => {
       
       router.push('/');
       return { success: true, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign out error:', error);
+      
+      let errorMessage = 'Sign out failed';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       
       setAuthState(prevState => ({
         ...prevState,
         isLoading: false,
-        error: error.message || 'Sign out failed'
+        error: errorMessage
       }));
       
-      return { success: false, error: error.message || 'Sign out failed' };
+      return { success: false, error: errorMessage };
     }
   };
 

@@ -1,8 +1,8 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/api/supabase';
 import { ensureUserProfile } from '@/lib/auth';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Get current user from Supabase
     const { data: { user }, error: userError } = await supabase.auth.getUser();

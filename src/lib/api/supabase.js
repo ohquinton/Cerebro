@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
 
 // Load environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -71,6 +72,21 @@ export const supabase = createClient(
   supabaseKey || '',
   supabaseOptions
 );
+
+// Function to create a Supabase server client (for server components)
+export const createServerSupabaseClient = ({ cookies }) => {
+  return createServerClient(
+    supabaseUrl || '',
+    supabaseKey || '',
+    {
+      cookies: {
+        get: (name) => cookies.get(name)?.value,
+        set: (name, value, options) => cookies.set(name, value, options),
+        remove: (name, options) => cookies.delete(name, options),
+      },
+    }
+  );
+};
 
 // Log that the client has been initialized
 console.log('Supabase client initialized with enhanced configuration');
