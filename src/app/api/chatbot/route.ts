@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from "openai";
 
-// Attempt to load API key from environment variable
-const apiKey = process.env.OPENAI_API_KEY;
+// Attempt to load API key from environment variable with fallback for builds
+const apiKey = process.env.OPENAI_API_KEY || 'placeholder_openai_key_for_build_time_only';
 
-// If environment variable isn't available, log an error
-if (!apiKey) {
-  console.error("OPENAI_API_KEY not found in environment variables. Please set it in your .env.local file.");
+// If environment variable isn't available, log information
+if (!process.env.OPENAI_API_KEY) {
+  console.log("Using placeholder OpenAI API key for build process");
 }
 
 // Initialize OpenAI client with environment variable
 const openai = new OpenAI({
-  apiKey: apiKey || "", // Empty string as fallback will cause API calls to fail rather than exposing a key
+  apiKey: apiKey,
 });
 
 // Cerebro knowledge base prompt
