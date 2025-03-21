@@ -1,0 +1,51 @@
+{
+  "name": "battle-bets",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@dicebear/bottts": "^9.2.2",
+    "@dicebear/collection": "^9.2.2",
+    "@dicebear/core": "^9.2.2",
+    "@dicebear/identicon": "^9.2.2",
+    "@dicebear/initials": "^9.2.2",
+    "@dicebear/pixel-art": "^9.2.2",
+    "@dicebear/shapes": "^9.2.2",
+    "@headlessui/react": "^2.2.0",
+    "@sendgrid/mail": "^8.1.4",
+    "@stripe/react-stripe-js": "^3.5.0",
+    "@stripe/stripe-js": "^6.1.0",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/supabase-js": "^2.49.1",
+    "@tailwindcss/forms": "^0.5.10",
+    "@vercel/analytics": "^1.5.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "firebase": "^11.4.0",
+    "lucide-react": "^0.477.0",
+    "mailgun-js": "^0.22.0",
+    "next": "15.2.1",
+    "openai": "^4.89.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "resend": "^4.1.2",
+    "stripe": "^17.7.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.1",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5"
+  }
+}
