@@ -14,6 +14,9 @@ if (!supabaseKey) {
   console.error('Missing NEXT_PUBLIC_SUPABASE_KEY environment variable');
 }
 
+// Log initialization for debugging
+console.log('Supabase client initialized with enhanced configuration');
+
 // Create a custom storage implementation for better debugging
 const customStorage = {
   getItem: (key) => {
@@ -21,33 +24,46 @@ const customStorage = {
       return null;
     }
     
-    const value = localStorage.getItem(key);
-    console.log(`[Auth Storage] Retrieved ${key?.substring(0, 15)}...`);
-    return value;
+    try {
+      const item = window.localStorage.getItem(key);
+      console.log(`[Auth Storage] Retrieved ${key?.substring(0, 15)}...`);
+      return item;
+    } catch (error) {
+      console.warn('Error accessing localStorage:', error);
+      return null;
+    }
   },
   setItem: (key, value) => {
     if (typeof window === 'undefined') {
       return;
     }
     
-    localStorage.setItem(key, value);
-    console.log(`[Auth Storage] Stored ${key?.substring(0, 15)}...`);
+    try {
+      window.localStorage.setItem(key, value);
+      console.log(`[Auth Storage] Stored ${key?.substring(0, 15)}...`);
+    } catch (error) {
+      console.warn('Error setting localStorage:', error);
+    }
   },
   removeItem: (key) => {
     if (typeof window === 'undefined') {
       return;
     }
     
-    localStorage.removeItem(key);
-    console.log(`[Auth Storage] Removed ${key?.substring(0, 15)}...`);
+    try {
+      window.localStorage.removeItem(key);
+      console.log(`[Auth Storage] Removed ${key?.substring(0, 15)}...`);
+    } catch (error) {
+      console.warn('Error removing from localStorage:', error);
+    }
   }
 };
 
-// Enhanced Supabase client configuration
+// Enhanced Supabase options for better error handling and debugging
 const supabaseOptions = {
   auth: {
-    persistSession: true,
     autoRefreshToken: true,
+    persistSession: true,
     detectSessionInUrl: true,
     storage: customStorage,
     storageKey: 'battle-bets-auth',
@@ -84,12 +100,14 @@ export const createServerSupabaseClient = ({ cookies }) => {
         set: (name, value, options) => cookies.set(name, value, options),
         remove: (name, options) => cookies.delete(name, options),
       },
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
     }
   );
 };
-
-// Log that the client has been initialized
-console.log('Supabase client initialized with enhanced configuration');
 
 // Function to check if Supabase is properly configured
 export const isSupabaseConfigured = () => {
